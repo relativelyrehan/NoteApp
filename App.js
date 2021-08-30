@@ -16,6 +16,7 @@ import MainPage from './src/screens';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import BottomBar from './Navigation/tabs';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,12 +49,13 @@ const HelloWorldApp = () => {
   RNBootSplash.hide({fade: true}); // fade
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      {/* <Stack.Navigator>
         <Stack.Screen name="Main" component={MainPage} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Welcome" component={Welcome} />
-      </Stack.Navigator>
+      </Stack.Navigator> */}
+      <BottomBar />
     </NavigationContainer>
   );
 };
