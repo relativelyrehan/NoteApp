@@ -6,13 +6,15 @@ import {
   Image,
   StyleSheet,
   StatusBar,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
+import store from './redux/store';
+import {Provider} from 'react-redux';
 import RNBootSplash from 'react-native-bootsplash';
 import Signup from './src/screens/Signup';
 import Welcome from './src/screens/Welcome';
 import MainPage from './src/screens';
+import VideoPlayer from './src/screens/Video';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -37,6 +39,18 @@ const HomeScreen = ({navigation}) => {
             onPress={() => navigation.push('Signup')}>
             <Text style={{color: '#fff', fontWeight: '800'}}>Get Started</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            title="Press me"
+            onPress={() => navigation.push('Video')}>
+            <Text
+              style={{
+                color: 'rgb(46,73,137)',
+                marginTop: 16,
+                fontWeight: '800',
+              }}>
+              Video
+            </Text>
+          </TouchableOpacity>
           <></>
         </View>
       </SafeAreaView>
@@ -47,14 +61,18 @@ const HomeScreen = ({navigation}) => {
 const HelloWorldApp = () => {
   RNBootSplash.hide({fade: true}); // fade
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Main" component={MainPage} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="Welcome" component={Welcome} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Main" component={MainPage} />
+
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Video" component={VideoPlayer} />
+          <Stack.Screen name="Signup" component={Signup} />
+          <Stack.Screen name="Welcome" component={Welcome} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 };
 

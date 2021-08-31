@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   TouchableOpacity,
@@ -7,36 +7,59 @@ import {
   Image,
   StyleSheet,
   Text,
-  Animated,
-  PanResponder,
 } from 'react-native';
 import Dialog from 'react-native-dialog';
+import axios from 'axios';
+
+import {useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
+import {setNotes} from '../../redux/actions/notes';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import icon from '../assets/images/upload.png';
 
 const MainPage = ({navigation}) => {
-  const [notes, setNotes] = useState([]);
+  const allNotes = useSelector(state => state.allNotes);
+  const dispatch = useDispatch();
+  const [notes, setNewNotes] = useState([]);
   const [note, setNote] = useState('');
   const [show, setShow] = useState(false);
-  const [val, setVal] = useState(0);
+  const [val, setVal] = useState({});
 
-  const pan = useRef(new Animated.ValueXY()).current;
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
-      onPanResponderRelease: () => {
-        Animated.spring(pan, {toValue: {x: 0, y: 0}}).start();
+  const pickImage = () => {
+    launchImageLibrary(
+      {
+        title: 'You can choose one image',
+        mediaType: 'photo',
+        selectionLimit: 1,
       },
-    }),
-  ).current;
+      res => {
+        if (res.didCancel) return;
+        else {
+          setVal(res.assets);
+        }
+      },
+    );
+  };
+
+  const getAllPosts = async () => {
+    const response = await axios
+      .get('https://jsonplaceholder.typicode.com/posts')
+      .catch(err => console.log(err));
+
+    dispatch(setNotes(response.data));
+  };
+
+  useEffect(() => {
+    getAllPosts();
+  }, []);
 
   const handleNoteSubmit = note => {
-    setNotes([...notes, note]);
+    setNewNotes([...notes, note]);
     setShow(false);
   };
 
   return (
     <>
-      {console.log(panResponder)}
       <SafeAreaView
         style={{flex: 1, alignItems: 'center', backgroundColor: '#fff'}}>
         <StatusBar barStyle="dark-content" backgroundColor="#000"></StatusBar>
@@ -45,46 +68,32 @@ const MainPage = ({navigation}) => {
             ...styles.container,
           }}>
           <Text style={styles.heading}>Your Notes</Text>
-          {notes.length > 0 ? (
-            notes.map(value => {
+          {allNotes.length > 0 ? (
+            allNotes.slice(0, 5).map(val => {
               return (
-                <Animated.View
-                  style={{
-                    transform: [{translateX: pan.x}],
-                  }}
-                  {...panResponder.panHandlers}>
-                  {console.log(pan.x, pan.y, 'to lowe')}
-
-                  <View
-                    style={{
-                      backgroundColor: 'rgb(106, 120, 98)',
-                      padding: 16,
-                      borderRadius: 8,
-                      marginTop: 10,
-                      marginBottom: 10,
-                      width: 300,
-                    }}>
-                    {console.log(value)}
-                    <Text
-                      style={{
-                        color: '#fff',
-                        fontWeight: '500',
-                        fontSize: 18,
-                        letterSpacing: 1,
-                      }}>
-                      {value}
-                    </Text>
-                  </View>
-                </Animated.View>
+                <View style={styles.card}>
+                  <Text
+                    style={{...styles.heading, fontSize: 16, color: '#fff'}}>
+                    {val.title}
+                  </Text>
+                </View>
               );
             })
           ) : (
             <View>
-              <Text style={styles.heading}>No New Notes</Text>
-              <Image
-                source={require('../assets/images/add-notes.png')}
-                style={{width: 240, height: 250, resizeMode: 'contain'}}
-              />
+              <Text style={{fontSize: 10}}>No New Notes</Text>
+              {val.length > 0 && (
+                <Image
+                  source={{
+                    uri: val[0].uri,
+                  }}
+                  style={{
+                    width: 240,
+                    height: 250,
+                    resizeMode: 'contain',
+                  }}
+                />
+              )}
             </View>
           )}
           <View>
@@ -112,6 +121,30 @@ const MainPage = ({navigation}) => {
             onPress={() => setShow(true)}>
             <Text style={{color: '#fff', fontWeight: '800', fontSize: 24}}>
               +
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            title="Press me"
+            style={{
+              ...styles.primaryButton,
+              position: 'absolute',
+              bottom: 30,
+              left: 10,
+              width: 40,
+              height: 40,
+              borderRadius: 1000,
+            }}
+            onPress={pickImage}>
+            <Text style={{color: '#fff', fontWeight: '800', fontSize: 24}}>
+              <Image
+                source={icon}
+                style={{
+                  tintColor: '#fff',
+                  height: 16,
+                  width: 24,
+                  resizeMode: 'contain',
+                }}
+              />
             </Text>
           </TouchableOpacity>
         </View>
@@ -162,6 +195,14 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     height: 20,
     width: 250,
+  },
+  card: {
+    backgroundColor: '#6F69AC',
+    marginTop: 5,
+    marginBottom: 5,
+    padding: 8,
+    borderRadius: 8,
+    width: 300,
   },
 });
 
