@@ -9,6 +9,7 @@ import {
   Image,
   StyleSheet,
   Text,
+  ScrollView,
 } from 'react-native';
 import Dialog from 'react-native-dialog';
 import axios from 'axios';
@@ -59,15 +60,15 @@ const MainPage = ({navigation}) => {
   const handleNoteSubmit = note => {
     setNewNotes([...notes, note]);
     setShow(false);
-    sendLocalNotification();
+    sendLocalNotification(note);
   };
 
-  const sendLocalNotification = () => {
+  const sendLocalNotification = note => {
     PushNotificationIOS.addNotificationRequest({
       id: 'sampleNotification',
       title: 'Hey',
       subtitle: 'New Note Added',
-      body: notes.pop(),
+      body: note,
       badge: 1,
     });
   };
@@ -82,34 +83,58 @@ const MainPage = ({navigation}) => {
             ...styles.container,
           }}>
           <Text style={styles.heading}>Your Notes</Text>
-          {allNotes.length > 0 ? (
-            allNotes.slice(0, 5).map(val => {
+          {val.length > 0 && (
+            <Image
+              source={{
+                uri: val[0].uri,
+              }}
+              style={{
+                width: 240,
+                height: 250,
+                resizeMode: 'contain',
+              }}
+            />
+          )}
+          <ScrollView>
+            {notes.map(val => {
               return (
                 <View style={styles.card}>
                   <Text
                     style={{...styles.heading, fontSize: 16, color: '#fff'}}>
-                    {val.title}
+                    {val}
                   </Text>
                 </View>
               );
-            })
-          ) : (
-            <View>
-              <Text style={{fontSize: 10}}>No New Notes</Text>
-              {val.length > 0 && (
-                <Image
-                  source={{
-                    uri: val[0].uri,
-                  }}
-                  style={{
-                    width: 240,
-                    height: 250,
-                    resizeMode: 'contain',
-                  }}
-                />
-              )}
-            </View>
-          )}
+            })}
+            {allNotes.length > 0 ? (
+              allNotes.slice(0, 10).map(val => {
+                return (
+                  <View style={styles.card}>
+                    <Text
+                      style={{...styles.heading, fontSize: 16, color: '#fff'}}>
+                      {val.title}
+                    </Text>
+                  </View>
+                );
+              })
+            ) : (
+              <View>
+                <Text style={{fontSize: 10}}>No New Notes</Text>
+                {val.length > 0 && (
+                  <Image
+                    source={{
+                      uri: val[0].uri,
+                    }}
+                    style={{
+                      width: 240,
+                      height: 250,
+                      resizeMode: 'contain',
+                    }}
+                  />
+                )}
+              </View>
+            )}
+          </ScrollView>
           <View>
             <Dialog.Container visible={show}>
               <Dialog.Title>Add note</Dialog.Title>
@@ -122,23 +147,6 @@ const MainPage = ({navigation}) => {
             </Dialog.Container>
           </View>
 
-          <TouchableOpacity
-            title="Press me"
-            style={{
-              ...styles.primaryButton,
-              position: 'absolute',
-              bottom: 30,
-              right: '25%',
-              height: 40,
-              width: 180,
-              borderRadius: 1000,
-              backgroundColor: '#000',
-            }}
-            onPress={sendLocalNotification}>
-            <Text style={{color: '#fff', fontWeight: '800', fontSize: 24}}>
-              Notification
-            </Text>
-          </TouchableOpacity>
           <TouchableOpacity
             title="Press me"
             style={{

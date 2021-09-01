@@ -65,12 +65,12 @@ const HelloWorldApp = () => {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="Main" component={MainPage} />
-          <Stack.Screen name="Notify" component={Notify} />
           <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Main" component={MainPage} />
           <Stack.Screen name="Video" component={VideoPlayer} />
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="Welcome" component={Welcome} />
+          <Stack.Screen name="Notify" component={Notify} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
