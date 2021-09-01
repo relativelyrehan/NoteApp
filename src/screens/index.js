@@ -1,4 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+
 import {
   View,
   TouchableOpacity,
@@ -18,6 +20,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import icon from '../assets/images/upload.png';
 
 const MainPage = ({navigation}) => {
+  const [permissions, setPermissions] = useState({});
   const allNotes = useSelector(state => state.allNotes);
   const dispatch = useDispatch();
   const [notes, setNewNotes] = useState([]);
@@ -56,6 +59,17 @@ const MainPage = ({navigation}) => {
   const handleNoteSubmit = note => {
     setNewNotes([...notes, note]);
     setShow(false);
+    sendLocalNotification();
+  };
+
+  const sendLocalNotification = () => {
+    PushNotificationIOS.addNotificationRequest({
+      id: 'sampleNotification',
+      title: 'Hey',
+      subtitle: 'New Note Added',
+      body: notes.pop(),
+      badge: 1,
+    });
   };
 
   return (
@@ -107,6 +121,24 @@ const MainPage = ({navigation}) => {
               />
             </Dialog.Container>
           </View>
+
+          <TouchableOpacity
+            title="Press me"
+            style={{
+              ...styles.primaryButton,
+              position: 'absolute',
+              bottom: 30,
+              right: '25%',
+              height: 40,
+              width: 180,
+              borderRadius: 1000,
+              backgroundColor: '#000',
+            }}
+            onPress={sendLocalNotification}>
+            <Text style={{color: '#fff', fontWeight: '800', fontSize: 24}}>
+              Notification
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity
             title="Press me"
             style={{

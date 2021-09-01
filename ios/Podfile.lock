@@ -346,6 +346,8 @@ PODS:
     - React-perflogger (= 0.65.1)
   - RNBootSplash (3.2.4):
     - React-Core
+  - RNCPushNotificationIOS (1.10.0):
+    - React-Core
   - RNDateTimePicker (3.5.2):
     - React-Core
   - RNScreens (3.6.0):
@@ -411,6 +413,7 @@ DEPENDENCIES:
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - RNBootSplash (from `../node_modules/react-native-bootsplash`)
+  - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -498,6 +501,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNBootSplash:
     :path: "../node_modules/react-native-bootsplash"
+  RNCPushNotificationIOS:
+    :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDateTimePicker:
     :path: "../node_modules/@react-native-community/datetimepicker"
   RNScreens:
@@ -552,6 +557,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 85187f19dd9c47a7c102f9994f9d14e4dc2110de
   ReactCommon: eafed38eec7b591c31751bfa7494801618460459
   RNBootSplash: 4844706cbb56a3270556c9b94e59dedadccd47e4
+  RNCPushNotificationIOS: 5ee247e594d0b5df3cd7be74b51035a0d91807eb
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
   RNScreens: eb0dfb2d6b21d2d7f980ad46b14eb306d2f1062e
   Yoga: aa0cb45287ebe1004c02a13f279c55a95f1572f4
