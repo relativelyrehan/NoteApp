@@ -1,21 +1,52 @@
-import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  Modal,
-} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SafeAreaView, View, Image, Modal} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {ButtonPrimary, ButtonSecondary} from '../components/UI/Button';
+import Heading from '../components/UI/Heading';
+import Layout from '../components/Layout';
 
 const Welcome = ({route, navigation}) => {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
+  const [store, setStore] = useState({
+    name: '',
+    bd: '',
+  });
+
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@storage_Key');
+      const value2 = await AsyncStorage.getItem('@birth_day');
+      if (value !== null) {
+        console.log('This is value', value);
+        setStore({
+          ...store,
+          name: value,
+        });
+      }
+      if (value2 !== null) {
+        setStore({
+          ...store,
+          bd: value2,
+        });
+      }
+    } catch (e) {}
+  };
+
+  const setBirthday = async val => {
+    try {
+      const value = JSON.stringify(val);
+      const bd = await AsyncStorage.setItem('@birth_day', value);
+      console.log('I am hit - bd:(');
+    } catch (e) {}
+  };
+
+  useEffect(() => getData(), [show]);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
+    setBirthday(currentDate);
     setShow(Platform.OS === 'ios');
     setDate(currentDate);
   };
@@ -28,12 +59,10 @@ const Welcome = ({route, navigation}) => {
         justifyContent: 'center',
         backgroundColor: '#fff',
       }}>
-      <View style={styles.container}>
+      <Layout>
         <View>
-          <Text style={styles.heading}>Hi, {name}</Text>
-          <Text style={{...styles.heading, fontSize: 20}}>
-            Tell us about yourself
-          </Text>
+          <Heading>Hi, {store.name || name}</Heading>
+          <Heading style={{fontSize: 20}}>Tell us about yourself</Heading>
         </View>
         <Image
           source={require('../assets/images/Mummy.png')}
@@ -41,7 +70,7 @@ const Welcome = ({route, navigation}) => {
         />
         <View>
           <Modal visible={show} animationType="fade">
-            <View style={styles.container}>
+            <Layout>
               <Image
                 source={require('../assets/images/Work-at-home.png')}
                 style={{width: 240, height: 250, resizeMode: 'contain'}}
@@ -56,65 +85,28 @@ const Welcome = ({route, navigation}) => {
                   onChange={onChange}
                 />
               </View>
-              <TouchableOpacity
-                title="Press me"
-                style={styles.primaryButton}
-                onPress={() => setShow(false)}>
-                <Text style={{color: '#fff', fontWeight: '800'}}>Close</Text>
-              </TouchableOpacity>
-            </View>
+              <ButtonPrimary
+                onPress={() => {
+                  navigation.navigate('Main');
+                  setShow(false);
+                }}>
+                Correct
+              </ButtonPrimary>
+              <ButtonSecondary onPress={() => setShow(false)}>
+                close
+              </ButtonSecondary>
+            </Layout>
           </Modal>
-          <TouchableOpacity
-            title="Press me"
-            style={{
-              ...styles.primaryButton,
-              marginTop: 10,
-              backgroundColor: 'rgb(115,141,225)',
-            }}
-            onPress={() => setShow(true)}>
-            <Text style={{color: '#fff', fontWeight: '800'}}>Add Birthday</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            title="Press me"
-            style={{
-              ...styles.primaryButton,
-              marginTop: 10,
-              backgroundColor: 'rgb(255,255,255)',
-            }}
-            onPress={() => navigation.navigate('Main')}>
-            <Text style={{color: '#000', fontWeight: '800'}}>Skip</Text>
-          </TouchableOpacity>
+          <ButtonPrimary onPress={() => setShow(true)}>
+            Add Birthday
+          </ButtonPrimary>
+          <ButtonSecondary onPress={() => navigation.navigate('Main')}>
+            Skip
+          </ButtonSecondary>
         </View>
-      </View>
+      </Layout>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heading: {
-    color: 'rgb(46,73,137)',
-    fontWeight: '800',
-    fontSize: 32,
-    textAlign: 'center',
-    fontFamily: 'Poppins-Bold',
-  },
-  primaryButton: {
-    backgroundColor: '#EF79BC',
-    flex: 1,
-    maxHeight: 40,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontWeight: '800',
-    height: 20,
-    width: 250,
-  },
-});
 
 export default Welcome;

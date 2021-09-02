@@ -3,14 +3,25 @@ import {
   SafeAreaView,
   View,
   Text,
-  TouchableOpacity,
   TextInput,
   Image,
   StyleSheet,
+  Alert,
 } from 'react-native';
+import {ButtonPrimary, ButtonSecondary} from '../components/UI/Button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Signup = ({navigation}) => {
   const [name, setName] = useState('');
+
+  const storeData = async value => {
+    try {
+      await AsyncStorage.setItem('@storage_Key', value);
+      console.log('I am hit');
+    } catch (e) {
+      // saving error
+    }
+  };
 
   return (
     <SafeAreaView
@@ -44,26 +55,25 @@ const Signup = ({navigation}) => {
           />
         </View>
         <View>
-          <TouchableOpacity
-            title="Press me"
-            style={styles.primaryButton}
-            onPress={() =>
-              navigation.navigate('Welcome', {
-                name: name,
-              })
-            }>
-            <Text style={{color: '#fff', fontWeight: '800'}}>Sign up</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            title="Press me"
-            style={{
-              ...styles.primaryButton,
-              marginTop: 10,
-              backgroundColor: 'rgb(115,141,225)',
-            }}
-            onPress={() => navigation.popToTop()}>
-            <Text style={{color: '#fff', fontWeight: '800'}}>Not now</Text>
-          </TouchableOpacity>
+          <ButtonPrimary
+            onPress={() => {
+              if (name) {
+                storeData(name);
+                navigation.navigate('Welcome', {
+                  name: name,
+                });
+              } else {
+                Alert.alert('Enter name');
+              }
+            }}>
+            Sign up
+          </ButtonPrimary>
+          <ButtonSecondary
+            onPress={() => {
+              navigation.popToTop();
+            }}>
+            Not now
+          </ButtonSecondary>
         </View>
       </View>
     </SafeAreaView>

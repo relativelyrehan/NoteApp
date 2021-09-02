@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 import {
@@ -17,9 +17,11 @@ import axios from 'axios';
 import {useSelector} from 'react-redux';
 import {useDispatch} from 'react-redux';
 import {setNotes} from '../../redux/actions/notes';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import icon from '../assets/images/upload.png';
-
+import Layout from '../components/Layout/index';
+import Heading from '../components/UI/Heading';
 const MainPage = ({navigation}) => {
   const [permissions, setPermissions] = useState({});
   const allNotes = useSelector(state => state.allNotes);
@@ -28,6 +30,33 @@ const MainPage = ({navigation}) => {
   const [note, setNote] = useState('');
   const [show, setShow] = useState(false);
   const [val, setVal] = useState({});
+  const [store, setStore] = useState();
+  const [memNotes, setMemNotes] = useState([]);
+
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@storage_Key');
+      const notesFromMemory = await AsyncStorage.getItem('@stored_notes');
+      setMemNotes(JSON.parse(notesFromMemory));
+      console.log('this --->>>', notesFromMemory);
+      if (value !== null) {
+        console.log('This is value', value);
+        setStore(value);
+      }
+    } catch (e) {
+      // error reading value
+    }
+  };
+
+  const setNoteAsync = async note => {
+    try {
+      const value = JSON.stringify(note);
+      await AsyncStorage.setItem('@stored_notes', value);
+      console.log('I am hit - bd:(');
+    } catch (e) {}
+  };
+
+  useEffect(() => getData(), [show, note]);
 
   const pickImage = () => {
     launchImageLibrary(
@@ -59,8 +88,10 @@ const MainPage = ({navigation}) => {
 
   const handleNoteSubmit = note => {
     setNewNotes([...notes, note]);
+    setNoteAsync(notes);
     setShow(false);
     sendLocalNotification(note);
+    getData();
   };
 
   const sendLocalNotification = note => {
@@ -78,11 +109,8 @@ const MainPage = ({navigation}) => {
       <SafeAreaView
         style={{flex: 1, alignItems: 'center', backgroundColor: '#fff'}}>
         <StatusBar barStyle="dark-content" backgroundColor="#000"></StatusBar>
-        <View
-          style={{
-            ...styles.container,
-          }}>
-          <Text style={styles.heading}>Your Notes</Text>
+        <Layout>
+          <Heading>{store}'s Notes </Heading>
           {val.length > 0 && (
             <Image
               source={{
@@ -96,17 +124,40 @@ const MainPage = ({navigation}) => {
             />
           )}
           <ScrollView>
-            {notes.map(val => {
-              return (
-                <View style={styles.card}>
-                  <Text
-                    style={{...styles.heading, fontSize: 16, color: '#fff'}}>
-                    {val}
-                  </Text>
-                </View>
-              );
-            })}
-            {allNotes.length > 0 ? (
+            {memNotes.length > 0 ? (
+              memNotes?.map(val => {
+                return (
+                  <View style={styles.card}>
+                    <TouchableOpacity
+                      onLongPress={() => console.log('I am held')}>
+                      <Text
+                        style={{
+                          fontWeight: '600',
+                          fontSize: 14,
+                          color: '#fff',
+                        }}>
+                        {val}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              })
+            ) : (
+              <View>
+                <Text style={{...styles.heading, fontSize: 16}}>
+                  No New Notes
+                </Text>
+                <Image
+                  source={require('../assets/images/Work-at-home.png')}
+                  style={{
+                    width: 240,
+                    height: 250,
+                    resizeMode: 'contain',
+                  }}
+                />
+              </View>
+            )}
+            {/* {allNotes.length > 0 ? (
               allNotes.slice(0, 10).map(val => {
                 return (
                   <View style={styles.card}>
@@ -133,7 +184,7 @@ const MainPage = ({navigation}) => {
                   />
                 )}
               </View>
-            )}
+            )} */}
           </ScrollView>
           <View>
             <Dialog.Container visible={show}>
@@ -187,7 +238,7 @@ const MainPage = ({navigation}) => {
               />
             </Text>
           </TouchableOpacity>
-        </View>
+        </Layout>
       </SafeAreaView>
     </>
   );
@@ -240,7 +291,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6F69AC',
     marginTop: 5,
     marginBottom: 5,
-    padding: 8,
+    padding: 16,
     borderRadius: 8,
     width: 300,
   },
