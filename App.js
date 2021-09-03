@@ -10,6 +10,7 @@ import VideoPlayer from './src/screens/Video';
 import Notify from './src/screens/Notify';
 import Layout from './src/components/Layout';
 import Heading from './src/components/UI/Heading';
+import Profile from './src/screens/Profile';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -52,8 +53,9 @@ const HelloWorldApp = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Main" component={MainPage} />
+          <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Video" component={VideoPlayer} />
           <Stack.Screen name="Signup" component={Signup} />

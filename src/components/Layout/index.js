@@ -8,6 +8,7 @@ function Layout({children}) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    paddingTop: 20,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',

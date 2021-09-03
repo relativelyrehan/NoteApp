@@ -20,6 +20,7 @@ import {setNotes} from '../../redux/actions/notes';
 import {launchImageLibrary} from 'react-native-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import icon from '../assets/images/upload.png';
+import profile from '../assets/images/profile.png';
 import Layout from '../components/Layout/index';
 import Heading from '../components/UI/Heading';
 const MainPage = ({navigation}) => {
@@ -110,7 +111,45 @@ const MainPage = ({navigation}) => {
         style={{flex: 1, alignItems: 'center', backgroundColor: '#fff'}}>
         <StatusBar barStyle="dark-content" backgroundColor="#000"></StatusBar>
         <Layout>
-          <Heading>{store}'s Notes </Heading>
+          <View
+            style={{
+              display: 'flex',
+              justifyContent: 'space-around',
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 16,
+            }}>
+            <Heading style={{fontSize: 20, marginRight: 40}}>
+              {store}'s Notes{' '}
+            </Heading>
+            <TouchableOpacity
+              title="Press me"
+              style={{
+                backgroundColor: '#fff',
+                width: 30,
+                height: 30,
+                borderRadius: 1000,
+              }}
+              onPress={() => navigation.navigate('Profile')}>
+              <Text
+                style={{
+                  color: '#000',
+                  fontWeight: '800',
+                  fontSize: 24,
+                }}>
+                <Image
+                  source={profile}
+                  style={{
+                    tintColor: '#EF79BC',
+                    height: 32,
+                    width: 32,
+                    resizeMode: 'contain',
+                    marginTop: 4,
+                  }}
+                />
+              </Text>
+            </TouchableOpacity>
+          </View>
           {val.length > 0 && (
             <Image
               source={{
